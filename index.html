@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modern Meal Tracker - Real-time meal data from Google Sheets">
+    <title>Meal Tracker | Live Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                            fill="currentColor" />
+                    </svg>
+                </div>
+                <h1>Meal Tracker</h1>
+            </div>
+            <div class="status-bar">
+                <div class="sync-indicator" id="syncIndicator">
+                    <div class="pulse"></div>
+                    <span>Live Sync</span>
+                </div>
+                <div class="last-updated" id="lastUpdated">
+                    Last updated: --
+                </div>
+            </div>
+        </header>
+
+        <!-- Month Selector -->
+        <nav class="month-nav">
+            <div class="month-scroll" id="monthScroll">
+                <!-- Months will be populated by JS -->
+            </div>
+        </nav>
+
+        <!-- Stats Cards -->
+        <section class="stats-section">
+            <div class="stat-card glass">
+                <div class="stat-icon people-icon">👥</div>
+                <div class="stat-info">
+                    <span class="stat-label">Members</span>
+                    <span class="stat-value" id="totalMembers">--</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon meals-icon">🍽️</div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Meals</span>
+                    <span class="stat-value" id="totalMeals">--</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon avg-icon">🛒</div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Bazar</span>
+                    <span class="stat-value" id="totalBazar">--</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon rate-icon">💰</div>
+                <div class="stat-info">
+                    <span class="stat-label">Meal Rate</span>
+                    <span class="stat-value" id="mealRate">--</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Member Dashboards -->
+        <section class="members-section">
+            <h2 class="section-title">👤 Member Dashboards</h2>
+            <div class="members-grid" id="membersGrid">
+                <!-- Member cards will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- Data Table -->
+        <section class="table-section glass">
+            <div class="table-header">
+                <h2>📋 Meal Details</h2>
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search members...">
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="mealTable">
+                    <thead>
+                        <tr id="tableHeader">
+                            <!-- Headers will be populated by JS -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                </div>
+                <p>Loading data...</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Data syncs automatically every 30 seconds</p>
+            <button class="refresh-btn" id="refreshBtn" onclick="fetchData()">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M4 4V9H4.58152M19.9381 11C19.446 7.05369 16.0796 4 12 4C8.64262 4 5.76829 6.06817 4.58152 9M4.58152 9H9M20 20V15H19.4185M19.4185 15C18.2317 17.9318 15.3574 20 12 20C7.92038 20 4.55399 16.9463 4.06189 13M19.4185 15H15"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Refresh Now
+            </button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
