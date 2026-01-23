@@ -400,8 +400,12 @@ function renderMemberDashboards() {
             ? parseFloat(dataRows[depositRowIndex][34]) || 0
             : 0;
 
-        // Get Bazar Cost from column AG rows 12-17 (index 32, rows 11-16 in data array)
-        const bazarRowIndex = 11 + index;
+        // Get Bazar Cost from column AG rows 12-17 (index 32, rows 10-15 in data array)
+        // Row 12 in sheet = index 10 in data array (since header is index 0 is not in data array effectively or if it is?)
+        // Actually dataRows excludes header usually? Let's assume standard behavior. 
+        // Header is row 1. Data starts row 2 (index 0). 
+        // Row 12 is index 10.
+        const bazarRowIndex = 10 + index;
         const memberBazar = (dataRows.length > bazarRowIndex && dataRows[bazarRowIndex])
             ? parseFloat(dataRows[bazarRowIndex][32]) || 0
             : 0;
