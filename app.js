@@ -400,8 +400,11 @@ function renderMemberDashboards() {
             ? parseFloat(dataRows[depositRowIndex][34]) || 0
             : 0;
 
-        // Calculate member's bazar cost
-        const memberBazar = (totalMeal * mealRate);
+        // Get Bazar Cost from column AG rows 12-17 (index 32, rows 11-16 in data array)
+        const bazarRowIndex = 11 + index;
+        const memberBazar = (dataRows.length > bazarRowIndex && dataRows[bazarRowIndex])
+            ? parseFloat(dataRows[bazarRowIndex][32]) || 0
+            : 0;
 
         // Calculate Total Cost = Bazar Cost + Maid Bill + Extra Expenses
         const totalCost = memberBazar + maidBill + extraExpenses;
