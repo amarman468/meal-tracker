@@ -389,11 +389,25 @@ function renderMemberDashboards() {
         // Get Extra Expenses from column AI (index 34)
         const extraExpenses = parseFloat(row[34]) || 0;
 
-        // Get Deposit from column AG rows 20-25 (index 32, rows 18-23 in data array)
+        // Get base Deposit from column AG rows 20-25 (Row 18-23 in data)
         const depositRowIndex = 18 + index;
-        const deposit = (dataRows.length > depositRowIndex && dataRows[depositRowIndex])
+        const baseDeposit = (dataRows.length > depositRowIndex && dataRows[depositRowIndex])
             ? parseFloat(dataRows[depositRowIndex][32]) || 0
             : 0;
+
+        // Get Maid Bill Paid from column AH rows 12-17 (Row 10-15 in data, Col Index 33)
+        const paymentRowIndex = 10 + index;
+        const maidPaid = (dataRows.length > paymentRowIndex && dataRows[paymentRowIndex])
+            ? parseFloat(dataRows[paymentRowIndex][33]) || 0
+            : 0;
+
+        // Get Extra Expenses Paid from column AI rows 12-17 (Row 10-15 in data, Col Index 34)
+        const extraPaid = (dataRows.length > paymentRowIndex && dataRows[paymentRowIndex])
+            ? parseFloat(dataRows[paymentRowIndex][34]) || 0
+            : 0;
+
+        // Calculate Total Deposit = Base Deposit + Maid Paid + Extra Paid
+        const deposit = baseDeposit + maidPaid + extraPaid;
 
         // Get Due from column AI rows 20-25 (index 34, rows 18-23 in data array)
         const due = (dataRows.length > depositRowIndex && dataRows[depositRowIndex])
