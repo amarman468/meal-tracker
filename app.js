@@ -329,10 +329,13 @@ function updateStats() {
         }
     }
 
-    // Get Meal Rate from cell AG10 (row 10 = index 8, column AG = index 32)
+    // Calculate Meal Rate manually for precision: Total Bazar / Total Meals
     let mealRate = 0;
-    if (dataRows.length >= 9 && dataRows[8]) {
-        const rateCell = dataRows[8][32]; // AG10
+    if (totalMeals > 0) {
+        mealRate = totalBazar / totalMeals;
+    } else if (dataRows.length >= 9 && dataRows[8]) {
+        // Fallback to reading from cell AG10 if totalMeals is 0
+        const rateCell = dataRows[8][32];
         const num = parseFloat(rateCell);
         if (!isNaN(num)) {
             mealRate = num;
@@ -343,7 +346,7 @@ function updateStats() {
     animateNumber(elements.totalMembers, members);
     animateNumber(elements.totalMeals, totalMeals);
     animateNumber(elements.totalBazar, totalBazar);
-    elements.mealRate.textContent = mealRate;
+    elements.mealRate.textContent = mealRate.toFixed(2);
 }
 
 // ========================================
