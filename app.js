@@ -343,7 +343,7 @@ function updateStats() {
     animateNumber(elements.totalMembers, members);
     animateNumber(elements.totalMeals, totalMeals);
     animateNumber(elements.totalBazar, totalBazar);
-    elements.mealRate.textContent = mealRate.toFixed(2);
+    elements.mealRate.textContent = mealRate;
 }
 
 // ========================================
