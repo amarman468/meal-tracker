@@ -223,8 +223,8 @@ async function fetchData() {
     elements.refreshBtn.classList.add('spinning');
 
     try {
-        // Use sheet name-based URL (like rent sheet)
-        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.mealSpreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(state.currentSheet.name)}`;
+        // Use export format which handles CORS better
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.mealSpreadsheetId}/export?format=csv&sheet=${encodeURIComponent(state.currentSheet.name)}`;
 
         // Add cache-busting parameter
         const response = await fetch(`${url}&_=${Date.now()}`);
