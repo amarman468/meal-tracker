@@ -24,8 +24,23 @@ const CONFIG = {
         { name: 'November 25', gid: '1784483707' },
         { name: 'December 25', gid: '1472519060' },
         { name: 'January 26', gid: '745959788' },
-        { name: 'February 26', gid: '1888986288' }
+        { name: 'February 26', gid: '1888986288' },
+        { name: 'March 26', gid: '467928527' }
     ],
+    // Rent spreadsheet configuration
+    rentSpreadsheetId: '1i15D1p3b-WgGrvkS9fLb9LeaE3hUvWGPewHYN6VoD8A',
+    // Month order for calculating "next month" rent sheet
+    monthOrder: ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'],
+    // Mapping: member index -> row number in rent sheet (1-indexed, D column)
+    memberSecondaryRows: {
+        0: 4,  // ফিরোজ কাকা -> D4
+        1: 3,  // আতিক ভাই -> D3
+        2: 2,  // আকিব ভাই -> D2
+        3: 8,  // আরমান -> D8
+        4: 7,  // ফারহান ভাই -> D7
+        5: 6   // মুন্না ভাই -> D6
+    },
     refreshInterval: 30000 // 30 seconds auto-refresh
 };
 
@@ -36,6 +51,7 @@ let state = {
     currentSheet: null,
     data: [],
     headers: [],
+    secondaryData: [], // Data from 2nd sheet
     isLoading: false,
     lastUpdated: null
 };
@@ -65,6 +81,7 @@ const elements = {
 function init() {
     renderMonthButtons();
     setupEventListeners();
+    checkAuthState();
 
     // Find current month or use latest sheet
     const currentMonthSheet = findCurrentMonthSheet();
@@ -72,6 +89,49 @@ function init() {
 
     // Start auto-refresh
     setInterval(fetchData, CONFIG.refreshInterval);
+}
+
+// ========================================
+// Authentication State Management
+// ========================================
+function checkAuthState() {
+    const savedMember = localStorage.getItem('currentMember');
+    const userProfile = document.getElementById('userProfile');
+    const signinLink = document.getElementById('signinLink');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+
+    if (savedMember) {
+        try {
+            const member = JSON.parse(savedMember);
+            userProfile.style.display = 'flex';
+            signinLink.style.display = 'none';
+            userAvatar.textContent = member.name.charAt(0).toUpperCase();
+            userName.textContent = member.name;
+        } catch (e) {
+            localStorage.removeItem('currentMember');
+        }
+    } else {
+        userProfile.style.display = 'none';
+        signinLink.style.display = 'flex';
+    }
+}
+
+function signOut() {
+    localStorage.removeItem('currentMember');
+    window.location.href = 'signup.html';
+}
+
+function getCurrentMember() {
+    const savedMember = localStorage.getItem('currentMember');
+    if (savedMember) {
+        try {
+            return JSON.parse(savedMember);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
 }
 
 // ========================================
@@ -177,6 +237,9 @@ async function fetchData() {
         state.data = data;
         state.lastUpdated = new Date();
 
+        // Fetch secondary sheet data
+        await fetchSecondarySheetData();
+
         renderTable();
         updateStats();
         renderMemberDashboards();
@@ -190,6 +253,73 @@ async function fetchData() {
         showLoading(false);
         elements.refreshBtn.classList.remove('spinning');
     }
+}
+
+// ========================================
+// Fetch Secondary Sheet Data
+// ========================================
+async function fetchSecondarySheetData() {
+    try {
+        // Get current sheet name and calculate next month's rent sheet
+        const currentSheetName = state.currentSheet ? state.currentSheet.name : null;
+        if (!currentSheetName) {
+            state.secondaryData = [];
+            return;
+        }
+
+        // Calculate next month's sheet name
+        const nextMonthSheetName = getNextMonthSheetName(currentSheetName);
+        if (!nextMonthSheetName) {
+            console.warn('Could not calculate next month for:', currentSheetName);
+            state.secondaryData = [];
+            return;
+        }
+
+        // Use the rent spreadsheet with sheet name parameter
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.rentSpreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nextMonthSheetName)}`;
+
+        const response = await fetch(`${url}&_=${Date.now()}`);
+
+        if (!response.ok) {
+            console.warn('Failed to fetch rent data for:', nextMonthSheetName);
+            state.secondaryData = [];
+            return;
+        }
+
+        const csvText = await response.text();
+        const { data } = parseCSV(csvText);
+        state.secondaryData = data;
+
+    } catch (error) {
+        console.warn('Error fetching secondary sheet data:', error);
+        state.secondaryData = [];
+    }
+}
+
+// ========================================
+// Get Next Month Sheet Name
+// ========================================
+function getNextMonthSheetName(currentSheetName) {
+    // Extract month and year from sheet name (e.g., "February 26" -> February, 26)
+    const parts = currentSheetName.split(' ');
+    const monthName = parts[0];
+    const year = parts[1] || '';
+
+    // Find current month index
+    const currentIndex = CONFIG.monthOrder.indexOf(monthName);
+    if (currentIndex === -1) return null;
+
+    // Calculate next month
+    const nextIndex = (currentIndex + 1) % 12;
+    const nextMonth = CONFIG.monthOrder[nextIndex];
+
+    // Handle year rollover (December -> January means year +1)
+    let nextYear = year;
+    if (currentIndex === 11 && year) { // December
+        nextYear = (parseInt(year) + 1).toString();
+    }
+
+    return nextYear ? `${nextMonth} ${nextYear}` : nextMonth;
 }
 
 // ========================================
@@ -357,7 +487,16 @@ function renderMemberDashboards() {
     const headers = state.headers;
 
     // Members are in rows 2-7 (index 0-5 in data array)
-    const memberRows = dataRows.slice(0, 6);
+    let memberRows = dataRows.slice(0, 6);
+
+    // Check if current user is admin (আরমান = index 3)
+    const currentMember = getCurrentMember();
+    const isAdmin = currentMember && currentMember.index === 3; // আরমান is admin
+
+    // If not admin  and logged in, only show their own card
+    if (currentMember && !isAdmin) {
+        memberRows = memberRows.filter((row, index) => index === currentMember.index);
+    }
 
     // Get meal rate for calculation
     let mealRate = 0;
@@ -379,7 +518,13 @@ function renderMemberDashboards() {
         'linear-gradient(135deg, #8b5cf6, #7c3aed)'
     ];
 
-    const memberCards = memberRows.map((row, index) => {
+    // Store original indices for non-admin view
+    const memberIndices = currentMember && !isAdmin
+        ? [currentMember.index]
+        : [0, 1, 2, 3, 4, 5];
+
+    const memberCards = memberRows.map((row, mapIndex) => {
+        const index = memberIndices[mapIndex]; // Use original index for data lookup
         const name = row[0] || `Member ${index + 1}`;
         const initial = name.charAt(0).toUpperCase();
 
@@ -430,8 +575,12 @@ function renderMemberDashboards() {
         // Calculate Total Cost = Bazar Cost + Maid Bill + Extra Expenses
         const totalCost = memberBazar + maidBill + extraExpenses;
 
+        // Check if this is the current logged-in user
+        const currentMember = getCurrentMember();
+        const isCurrentUser = currentMember && currentMember.index === index;
+
         return `
-            <div class="member-card" style="--card-gradient: ${gradients[index % gradients.length]}">
+            <div class="member-card${isCurrentUser ? ' current-user' : ''}" style="--card-gradient: ${gradients[index % gradients.length]}">
                 <div class="member-header">
                     <div class="member-avatar" style="background: ${gradients[index % gradients.length]}">${initial}</div>
                     <div class="member-name">${escapeHtml(name)}</div>
@@ -442,7 +591,7 @@ function renderMemberDashboards() {
                         <span class="member-stat-value">${totalMeal}</span>
                     </div>
                     <div class="member-stat">
-                        <span class="member-stat-label">Bazar Cost</span>
+                        <span class="member-stat-label">Meal Cost</span>
                         <span class="member-stat-value">৳${Math.round(memberBazar)}</span>
                     </div>
                     <div class="member-stat">
@@ -461,9 +610,17 @@ function renderMemberDashboards() {
                         <span class="member-stat-label">Deposit</span>
                         <span class="member-stat-value">৳${deposit}</span>
                     </div>
-                    <div class="member-stat highlight">
+                    <div class="member-stat">
                         <span class="member-stat-label">Due</span>
                         <span class="member-stat-value">৳${due}</span>
+                    </div>
+                    <div class="member-stat secondary-data">
+                        <span class="member-stat-label">House Rent Due</span>
+                        <span class="member-stat-value">৳${getSecondarySheetValue(index)}</span>
+                    </div>
+                    <div class="member-stat highlight">
+                        <span class="member-stat-label">Total Due</span>
+                        <span class="member-stat-value">৳${due + getSecondarySheetValue(index)}</span>
                     </div>
                 </div>
             </div>
@@ -530,6 +687,26 @@ function showError(message) {
             </td>
         </tr>
     `;
+}
+
+// ========================================
+// Get Secondary Sheet Value for Member
+// ========================================
+function getSecondarySheetValue(memberIndex) {
+    // Get the row number from the mapping (1-indexed)
+    const rowNum = CONFIG.memberSecondaryRows[memberIndex];
+    if (!rowNum) return 0;
+
+    // Convert to array index (row 2 = index 0 in data array since row 1 is header)
+    const dataIndex = rowNum - 2;
+
+    // Column F = index 5 (0-indexed: A=0, B=1, C=2, D=3, E=4, F=5)
+    if (state.secondaryData && state.secondaryData.length > dataIndex && state.secondaryData[dataIndex]) {
+        const value = parseFloat(state.secondaryData[dataIndex][5]) || 0;
+        return Math.round(value);
+    }
+
+    return 0;
 }
 
 // ========================================

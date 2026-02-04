@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Sign in to Meal Tracker - Select your member name">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Meal Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <title>Sign Up | Meal Tracker</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Sign Up Page Specific Styles */
+        .signup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .signup-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 48px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .signup-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .signup-logo svg {
+            width: 44px;
+            height: 44px;
+            color: white;
+        }
+
+        .signup-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .signup-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .member-select-wrapper {
+            position: relative;
+        }
+
+        .member-select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--text-muted);
+            pointer-events: none;
+        }
+
+        .member-select {
+            width: 100%;
+            padding: 18px 50px 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: all var(--transition-normal);
+        }
+
+        .member-select:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .member-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .member-select option {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 12px;
+        }
+
+        .signin-btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .signin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        .signin-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .signin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .signin-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .guest-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .guest-link:hover {
+            color: var(--primary-light);
+        }
+
+        .guest-link span {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        /* Loading state */
+        .loading-members {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-muted);
+        }
+
+        .loading-members .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Member Cards Selection */
+        .member-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 400px) {
+            .member-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .member-option {
+            padding: 20px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .member-option:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .member-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .member-option-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .member-option-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            color: #f87171;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Sign Up Container -->
+    <div class="signup-container">
+        <div class="signup-card">
+            <div class="signup-header">
+                <div class="signup-logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                            fill="currentColor" />
+                    </svg>
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Select your name to access your dashboard</p>
+            </div>
+
+            <div id="errorMessage" class="error-message">
+                Please select a member to continue
+            </div>
+
+            <div class="form-group">
+                <label>Choose Your Name</label>
+                <div id="memberCardsContainer">
+                    <div class="loading-members">
+                        <div class="spinner"></div>
+                        <span>Loading members...</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="signin-btn" id="signinBtn" disabled onclick="handleSignIn()">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M15 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H15M10 17L15 12M15 12L10 7M15 12H3"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Sign In
+            </button>
+
+            <a href="index.html" class="guest-link">
+                Continue as <span>Guest</span> →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - same as app.js
+        const CONFIG = {
+            spreadsheetId: '2PACX-1vReiloobnhgg-6OINcBtuzYsgGIEzmmtw24ThOmHjHTx3Cvo6hiaonmKWANc-NIsDv8ucZDep7xa9ad',
+            sheets: [
+                { name: 'July', gid: '120024093' },
+                { name: 'August', gid: '134100736' },
+                { name: 'September', gid: '928188986' },
+                { name: 'October', gid: '644857499' },
+                { name: 'November', gid: '127691021' },
+                { name: 'December', gid: '864812047' },
+                { name: 'January 25', gid: '434994324' },
+                { name: 'February 25', gid: '962316364' },
+                { name: 'March 25', gid: '1488905778' },
+                { name: 'April 25', gid: '576193102' },
+                { name: 'May 25', gid: '335063292' },
+                { name: 'June 25', gid: '397753033' },
+                { name: 'July 25', gid: '1005786471' },
+                { name: 'August 25', gid: '660618391' },
+                { name: 'September 25', gid: '129313601' },
+                { name: 'October 25', gid: '1453191209' },
+                { name: 'November 25', gid: '1784483707' },
+                { name: 'December 25', gid: '1472519060' },
+                { name: 'January 26', gid: '745959788' },
+                { name: 'February 26', gid: '1888986288' }
+            ]
+        };
+
+        const gradients = [
+            'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            'linear-gradient(135deg, #ec4899, #f43f5e)',
+            'linear-gradient(135deg, #06b6d4, #0891b2)',
+            'linear-gradient(135deg, #10b981, #059669)',
+            'linear-gradient(135deg, #f59e0b, #d97706)',
+            'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+        ];
+
+        let selectedMember = null;
+        let members = [];
+
+        // Find current month sheet
+        function findCurrentMonthSheet() {
+            const now = new Date();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const currentMonth = monthNames[now.getMonth()];
+            const year = now.getFullYear().toString().slice(-2);
+
+            let sheet = CONFIG.sheets.find(s =>
+                s.name.includes(currentMonth) && s.name.includes(year)
+            );
+
+            if (!sheet) {
+                sheet = CONFIG.sheets.find(s => s.name.includes(currentMonth));
+            }
+
+            return sheet || CONFIG.sheets[CONFIG.sheets.length - 1];
+        }
+
+        // Parse CSV line
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            result.push(current.trim());
+            return result;
+        }
+
+        // Load members from Google Sheets
+        async function loadMembers() {
+            try {
+                const currentSheet = findCurrentMonthSheet();
+                const url = `https://docs.google.com/spreadsheets/d/e/${CONFIG.spreadsheetId}/pub?gid=${currentSheet.gid}&single=true&output=csv`;
+
+                const response = await fetch(`${url}&_=${Date.now()}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+
+                // Members are in rows 2-7 (index 1-6 in lines array, after header)
+                members = [];
+                for (let i = 1; i <= 6 && i < lines.length; i++) {
+                    const row = parseCSVLine(lines[i]);
+                    const name = row[0];
+                    if (name && name.trim()) {
+                        members.push({
+                            index: i - 1,
+                            name: name.trim()
+                        });
+                    }
+                }
+
+                renderMemberCards();
+
+            } catch (error) {
+                console.error('Error loading members:', error);
+                document.getElementById('memberCardsContainer').innerHTML = `
+                    <div class="error-message show">
+                        Failed to load members. Please <a href="javascript:location.reload()" style="color: var(--primary-light);">try again</a>.
+                    </div>
+                `;
+            }
+        }
+
+        // Render member cards
+        function renderMemberCards() {
+            const container = document.getElementById('memberCardsContainer');
+
+            if (members.length === 0) {
+                container.innerHTML = `
+                    <div class="error-message show">
+                        No members found. Please check your data source.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="member-cards-grid">
+                    ${members.map((member, idx) => `
+                        <div class="member-option" data-index="${member.index}" data-name="${member.name}" onclick="selectMember(this)">
+                            <div class="member-option-avatar" style="background: ${gradients[idx % gradients.length]}">
+                                ${member.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="member-option-name">${escapeHtml(member.name)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Select member
+        function selectMember(element) {
+            // Remove previous selection
+            document.querySelectorAll('.member-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection to clicked element
+            element.classList.add('selected');
+
+            selectedMember = {
+                index: parseInt(element.dataset.index),
+                name: element.dataset.name
+            };
+
+            // Enable sign in button
+            document.getElementById('signinBtn').disabled = false;
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Handle sign in
+        function handleSignIn() {
+            if (!selectedMember) {
+                document.getElementById('errorMessage').classList.add('show');
+                return;
+            }
+
+            // Store selected member in localStorage
+            localStorage.setItem('currentMember', JSON.stringify(selectedMember));
+
+            // Redirect to dashboard
+            window.location.href = 'index.html';
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Check if already logged in
+        function checkExistingLogin() {
+            const savedMember = localStorage.getItem('currentMember');
+            if (savedMember) {
+                // Already logged in, redirect to dashboard
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Don't auto-redirect, let user choose
+            loadMembers();
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
