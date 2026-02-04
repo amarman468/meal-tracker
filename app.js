@@ -2,30 +2,32 @@
 // Configuration
 // ========================================
 const CONFIG = {
-    // Your published Google Sheet CSV URLs for each month
-    spreadsheetId: '2PACX-1vReiloobnhgg-6OINcBtuzYsgGIEzmmtw24ThOmHjHTx3Cvo6hiaonmKWANc-NIsDv8ucZDep7xa9ad',
+    // Meal spreadsheet (using sheet names instead of GIDs)
+    mealSpreadsheetId: '1jExZaOhBUOKdWfsKlCCPqVeF0ArmTw528-LceOzv1uw',
     sheets: [
-        { name: 'July', gid: '120024093' },
-        { name: 'August', gid: '134100736' },
-        { name: 'September', gid: '928188986' },
-        { name: 'October', gid: '644857499' },
-        { name: 'November', gid: '127691021' },
-        { name: 'December', gid: '864812047' },
-        { name: 'January 25', gid: '434994324' },
-        { name: 'February 25', gid: '962316364' },
-        { name: 'March 25', gid: '1488905778' },
-        { name: 'April 25', gid: '576193102' },
-        { name: 'May 25', gid: '335063292' },
-        { name: 'June 25', gid: '397753033' },
-        { name: 'July 25', gid: '1005786471' },
-        { name: 'August 25', gid: '660618391' },
-        { name: 'September 25', gid: '129313601' },
-        { name: 'October 25', gid: '1453191209' },
-        { name: 'November 25', gid: '1784483707' },
-        { name: 'December 25', gid: '1472519060' },
-        { name: 'January 26', gid: '745959788' },
-        { name: 'February 26', gid: '1888986288' },
-        { name: 'March 26', gid: '467928527' }
+        { name: 'July' },
+        { name: 'August' },
+        { name: 'September' },
+        { name: 'October' },
+        { name: 'November' },
+        { name: 'December' },
+        { name: 'January 25' },
+        { name: 'February 25' },
+        { name: 'March 25' },
+        { name: 'April 25' },
+        { name: 'May 25' },
+        { name: 'June 25' },
+        { name: 'July 25' },
+        { name: 'August 25' },
+        { name: 'September 25' },
+        { name: 'October 25' },
+        { name: 'November 25' },
+        { name: 'December 25' },
+        { name: 'January 26' },
+        { name: 'February 26' },
+        { name: 'March 26' },
+        { name: 'April 26' },
+        { name: 'May 26' }
     ],
     // Rent spreadsheet configuration
     rentSpreadsheetId: '1i15D1p3b-WgGrvkS9fLb9LeaE3hUvWGPewHYN6VoD8A',
@@ -221,7 +223,8 @@ async function fetchData() {
     elements.refreshBtn.classList.add('spinning');
 
     try {
-        const url = `https://docs.google.com/spreadsheets/d/e/${CONFIG.spreadsheetId}/pub?gid=${state.currentSheet.gid}&single=true&output=csv`;
+        // Use sheet name-based URL (like rent sheet)
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.mealSpreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(state.currentSheet.name)}`;
 
         // Add cache-busting parameter
         const response = await fetch(`${url}&_=${Date.now()}`);
